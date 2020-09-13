@@ -1,0 +1,9 @@
+﻿  Board.cpp
+D:\Users\Dashiell\Documents\Projects\Sudoku2\Sudoku\Board.cpp(58,25): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+D:\Users\Dashiell\Documents\Projects\Sudoku2\Sudoku\Board.cpp(59,25): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+D:\Users\Dashiell\Documents\Projects\Sudoku2\Sudoku\Board.cpp(144,19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  GameMaster.cpp
+  Square.cpp
+  Sudoku.cpp
+  Generating Code...
+  Sudoku.vcxproj -> D:\Users\Dashiell\Documents\Projects\Sudoku2\Sudoku\Debug\Sudoku.exe
