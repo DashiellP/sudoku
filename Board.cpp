@@ -96,7 +96,7 @@ bool Board::writeValueToBoard(int value, int x, int y)
 }
 
 /*
- Initialize the _boardState property and populate it with a randomly generated, solved board
+ Initialize the _boardState vector and populate it with a randomly generated, solved board
  */
 int Board::_generateSolvedBoard()
 {
@@ -128,6 +128,8 @@ int Board::_generateSolvedBoard()
 			{
 				// If there are no valid values for this square, step back 1 square
 				// And try assigning a new value to it
+				// Need to clear the current value and previously attempted values
+				// since they may be valid once we get back to this square
 				newSquare.assignValue(0, true);
 				newSquare.clearAttemptedValues();
 				this->_boardState[squareIndex] = newSquare;
