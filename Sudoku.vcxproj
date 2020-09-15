@@ -151,11 +151,13 @@
     <ClCompile Include="GameMaster.cpp" />
     <ClCompile Include="Square.cpp" />
     <ClCompile Include="Sudoku.cpp" />
+    <ClCompile Include="SudokuConsoleInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="GameMaster.h" />
     <ClInclude Include="Square.h" />
+    <ClInclude Include="SudokuConsoleInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

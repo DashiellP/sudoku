@@ -14,6 +14,8 @@ private:
 	std::set<int> _valuesAttemptedDuringBoardGeneration;
 
 public:
+	bool isMutable;
+
 	BoardSquare();
 	BoardSquare(Board *board, int x, int y);
 
@@ -23,6 +25,6 @@ public:
 	int getValue();
 
 	void clearAttemptedValues();
-	bool assignValue(int value, int boardIsGenerating);
+	bool assignValue(int value, bool boardIsGenerating);
 };
 

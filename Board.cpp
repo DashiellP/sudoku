@@ -8,13 +8,14 @@
 #include <iostream>
 #include <random>
 
-Board::Board(int width, int height, int boxWidth, int boxHeight)
+Board::Board(int width, int height, int boxWidth, int boxHeight, int numberOfStartingValues)
     {
         this->_width = width;
         this->_height = height;
         this->_boxWidth = boxWidth;
         this->_boxHeight = boxHeight;
         this->_generateSolvedBoard();
+        this->_unsolveBoard(width * height - numberOfStartingValues);
     }
 
     /*int Board::getWidth();
@@ -69,6 +70,10 @@ std::list<int> Board::getValuesInBox(int x, int y)
 }
 
 std::vector<BoardSquare> Board::getBoardState() { return this->_boardState; }
+int Board::getWidth() { return this->_width; }
+int Board::getHeight() { return this->_height; }
+int Board::getBoxWidth() { return this->_boxWidth; }
+int Board::getBoxHeight() { return this->_boxHeight; }
 
     std::list<int> Board::getValidValuesForCoordinates(int x, int y)
     {
@@ -137,8 +142,6 @@ std::vector<BoardSquare> Board::getBoardState() { return this->_boardState; }
         }
     }
 
-    //int Board::_createBoard();
-
     int Board::_generateSolvedBoard()
     {
         srand(time(NULL));
@@ -166,7 +169,7 @@ std::vector<BoardSquare> Board::getBoardState() { return this->_boardState; }
                 }
                 if (validValues.size() == 0)
                 {
-                    newSquare.assignValue(0, false);
+                    newSquare.assignValue(0, true);
                     newSquare.clearAttemptedValues();
                     this->_boardState[squareIndex] = newSquare;
                     if (x > 0)
@@ -189,4 +192,19 @@ std::vector<BoardSquare> Board::getBoardState() { return this->_boardState; }
             }
         }
         return 1;
+    }
+
+    void Board::_unsolveBoard(int numberOfValuesToDelete)
+    {
+        std::vector<BoardSquare> tempBoard = this->_boardState;
+        std::random_shuffle(tempBoard.begin(), tempBoard.end());
+        std::vector<BoardSquare>::iterator it = tempBoard.begin();
+        int i = 0;
+        while (i < numberOfValuesToDelete && it != tempBoard.end())
+        {
+            this->_boardState[this->_width * it->getY() + it->getX()].assignValue(0, true);
+            it->isMutable = true;
+            ++it;
+            ++i;
+        }
     }

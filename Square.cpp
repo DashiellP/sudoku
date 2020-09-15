@@ -23,12 +23,19 @@ void BoardSquare::clearAttemptedValues()
 	this->_valuesAttemptedDuringBoardGeneration = std::set<int>();
 }
 
-bool BoardSquare::assignValue(int value, int boardIsGenerating)
+bool BoardSquare::assignValue(int value, bool boardIsGenerating)
 {
 	if (boardIsGenerating)
 	{
-		this->_valuesAttemptedDuringBoardGeneration.insert(value);	 
+		this->_valuesAttemptedDuringBoardGeneration.insert(value);
+		this->_value = value;
+		this->isMutable = false;
+		return true;
 	}
-	this->_value = value;
-	return true;
+	else if (this->_value == 0 || this->isMutable)
+	{
+		this->_value = value;
+		return true;
+	}
+	return false;
 }

@@ -8,8 +8,9 @@ private:
 
 public:
 	GameMaster();
-	void startGame();
+	void startGame(int numberOfStartingValues);
 	bool makeMove(int value, int x, int y);
 	bool isGameComplete();
+	Board getBoard();
 };
 

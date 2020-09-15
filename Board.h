@@ -6,7 +6,7 @@
 class Board
 {
 public:
-	Board(int width, int height, int boxWidth, int boxHeight);
+	Board(int width, int height, int boxWidth, int boxHeight, int numberOfStartingValues);
 
 	int getWidth();
 	int getHeight();
@@ -31,5 +31,5 @@ private:
 
 	int _createBoard();
 	int _generateSolvedBoard();
-	void unsolveBoard();
+	void _unsolveBoard(int numberOfValuesToDelete);
 };
