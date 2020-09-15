@@ -19,7 +19,6 @@ public:
 	std::list<int> getValuesInBox(int x, int y);
 	std::list<int> getValidValuesForCoordinates(int x, int y);
 	bool writeValueToBoard(int value, int x, int y);
-	std::string toString();
 
 private:
 	int _width;
@@ -28,8 +27,7 @@ private:
 	int _boxHeight;
 	std::vector<BoardSquare> _boardState;
 	std::vector<int> _solution;
-
-	int _createBoard();
+	
 	int _generateSolvedBoard();
 	void _unsolveBoard(int numberOfValuesToDelete);
 };

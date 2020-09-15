@@ -14,18 +14,11 @@ Board::Board(int width, int height, int boxWidth, int boxHeight, int numberOfSta
         this->_height = height;
         this->_boxWidth = boxWidth;
         this->_boxHeight = boxHeight;
+        // Start by building the solution, then delete values from it
         this->_generateSolvedBoard();
-        this->_unsolveBoard(width * height - numberOfStartingValues);
+		int numberOfValuesToDelete = width * height - numberOfStartingValues;
+        this->_unsolveBoard(numberOfValuesToDelete);
     }
-
-    /*int Board::getWidth();
-    int Board::getHeight();
-    int Board::getBoxWidth();
-    int Board::getBoxHeight();
-    int Board::getValueAtCoordinates(int x, int y);
-    int* Board::getValuesInColumn(int x);
-    int* Board::getValuesInRow(int y);
-    int* Board::getValuesInBox(int x, int y);*/
 
 int Board::getValueAtCoordinates(int x, int y)
 {
@@ -75,136 +68,108 @@ int Board::getHeight() { return this->_height; }
 int Board::getBoxWidth() { return this->_boxWidth; }
 int Board::getBoxHeight() { return this->_boxHeight; }
 
-    std::list<int> Board::getValidValuesForCoordinates(int x, int y)
-    {
-        std::list<int> validValues = std::list<int>({1, 2, 3, 4, 5, 6, 7, 8, 9});
-        std::list<int> valuesOnBoard = this->getValuesInColumn(x);
-        valuesOnBoard.splice(valuesOnBoard.end(), this->getValuesInRow(y));
-        valuesOnBoard.splice(valuesOnBoard.end(), this->getValuesInBox(x, y));
-        std::list<int>::iterator it = valuesOnBoard.begin();
-        for (std::list<int>::iterator iterator = valuesOnBoard.begin(), end = valuesOnBoard.end();
-            iterator != end;
-            ++iterator) 
-        {
-            validValues.remove(*iterator);
-        }
-        return validValues;
-    }
+/*
+ Get the values that can be written at (x, y) that do not conflict with those already on the board
+ */
+std::list<int> Board::getValidValuesForCoordinates(int x, int y)
+{
+	std::list<int> validValues = std::list<int>({ 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+	std::list<int> valuesOnBoard = this->getValuesInColumn(x);
+	valuesOnBoard.splice(valuesOnBoard.end(), this->getValuesInRow(y));
+	valuesOnBoard.splice(valuesOnBoard.end(), this->getValuesInBox(x, y));
+	std::list<int>::iterator it = valuesOnBoard.begin();
+	for (std::list<int>::iterator iterator = valuesOnBoard.begin(), end = valuesOnBoard.end();
+		iterator != end;
+		++iterator)
+	{
+		validValues.remove(*iterator);
+	}
+	return validValues;
+}
 
-    bool Board::writeValueToBoard(int value, int x, int y)
-    {
-        this->_boardState[this->_width * y + x].assignValue(value, false);
-        return true;
-    }
+/*
+ Attempt to write a value to (x,y). Returns true if the value is valid and was successfully written.
+ */
+bool Board::writeValueToBoard(int value, int x, int y)
+{
+	return this->_boardState[this->_width * y + x].assignValue(value, false);
+}
 
-    std::string Board::toString()
-    {
-        // The output contains 1 character per box + the borders + a newline character for each line
-        int outputWidth = this->_width * 2 + 2;
-        int outputHeight = this->_height * 2 + 1;
-        std::string output = "";
-        for (int i = 0; i < this->_width * this->_height; ++i)
-        {
-            output += std::to_string(this->_boardState[i].getValue());
-            if (i % this->_width == this->_width - 1)
-            {
-                output += '\n';
-            }
-        }
-        return output;
-        for (int y = 0; y < outputHeight; ++y)
-        {
-            for (int x = 0; x < outputWidth; ++x)
-            {
-                if (x % this->_boxWidth == 0)
-                {
-                    if (y % this->_boxHeight == 0)
-                    {
-                        output += "x";
-                    }
-                    else
-                    {
-                        output += "x";
-                    }
-                }
-                else
-                {
-                    if (y % 2 == 0)
-                    {
-                        output += "x";
-                    }
-                    else
-                    {
+/*
+ Initialize the _boardState property and populate it with a randomly generated, solved board
+ */
+int Board::_generateSolvedBoard()
+{
+	srand(time(NULL));
+	int boardSize = this->_width * this->_height;
+	this->_boardState = std::vector<BoardSquare>(boardSize);
+	for (int y = 0; y < this->_height; ++y)
+	{
+		for (int x = 0; x < this->_width; ++x)
+		{
+			int squareIndex = y * this->_width + x;
+			std::list<int> validValues = this->getValidValuesForCoordinates(x, y);
+			BoardSquare newSquare(this, x, y);
+			if (this->_boardState[squareIndex].getAttemptedValues().size() > 0)
+			{
+				// If we have tried assigning values to the square before,
+				// Remove them from the possible values for this square
+				newSquare = this->_boardState[squareIndex];
+				if (validValues.size() > 0)
+				{
+					std::set<int> attemptedValues = newSquare.getAttemptedValues();
+					for (std::set<int>::iterator it = attemptedValues.begin(); it != attemptedValues.end(); ++it)
+					{
+						validValues.remove(*it);
+					}
+				}
+			}
+			if (validValues.size() == 0)
+			{
+				// If there are no valid values for this square, step back 1 square
+				// And try assigning a new value to it
+				newSquare.assignValue(0, true);
+				newSquare.clearAttemptedValues();
+				this->_boardState[squareIndex] = newSquare;
+				if (x > 0)
+				{
+					x -= 2;
+				}
+				else
+				{
+					// Step back to the end of the previous line if necessary
+					x = this->_width - 1;
+					y -= 1;
+				}
+			}
+			else
+			{
+				// Assign a random valid value to the square
+				std::list<int>::iterator randIt = validValues.begin();
+				std::advance(randIt, std::rand() % validValues.size());
+				newSquare.assignValue(*randIt, true);
+				this->_boardState[squareIndex] = newSquare;
+			}
+		}
+	}
+	return 1;
+}
 
-                    }
-                }
-            }
-        }
-    }
-
-    int Board::_generateSolvedBoard()
-    {
-        srand(time(NULL));
-        int boardSize = this->_width * this->_height;
-        this->_boardState = std::vector<BoardSquare>(boardSize);
-        int backsteps = 0;
-        for (int y = 0; y < this->_height; ++y)
-        {
-            for (int x = 0; x < this->_width; ++x)
-            {
-                int squareIndex = y * this->_width + x;
-                std::list<int> validValues = this->getValidValuesForCoordinates(x, y);
-                BoardSquare newSquare(this, x, y);
-                if (this->_boardState[squareIndex].getAttemptedValues().size() > 0)
-                {
-                    newSquare = this->_boardState[squareIndex];
-                    if (validValues.size() > 0)
-                    {
-                        std::set<int> attemptedValues = newSquare.getAttemptedValues();
-                        for (std::set<int>::iterator it = attemptedValues.begin(); it != attemptedValues.end(); ++it)
-                        {
-                            validValues.remove(*it);
-                        }
-                    }
-                }
-                if (validValues.size() == 0)
-                {
-                    newSquare.assignValue(0, true);
-                    newSquare.clearAttemptedValues();
-                    this->_boardState[squareIndex] = newSquare;
-                    if (x > 0)
-                    {
-                        x -= 2;
-                    }
-                    else
-                    {
-                        x = this->_width - 1;
-                        y -= 1;
-                    }
-                }
-                else
-                {
-                    std::list<int>::iterator randIt = validValues.begin();
-                    std::advance(randIt, std::rand() % validValues.size());
-                    newSquare.assignValue(*randIt, true);
-                    this->_boardState[squareIndex] = newSquare;
-                }
-            }
-        }
-        return 1;
-    }
-
-    void Board::_unsolveBoard(int numberOfValuesToDelete)
-    {
-        std::vector<BoardSquare> tempBoard = this->_boardState;
-        std::random_shuffle(tempBoard.begin(), tempBoard.end());
-        std::vector<BoardSquare>::iterator it = tempBoard.begin();
-        int i = 0;
-        while (i < numberOfValuesToDelete && it != tempBoard.end())
-        {
-            this->_boardState[this->_width * it->getY() + it->getX()].assignValue(0, true);
-            it->isMutable = true;
-            ++it;
-            ++i;
-        }
-    }
+/*
+ Delete a given number of randomly selected values from the board
+ */
+void Board::_unsolveBoard(int numberOfValuesToDelete)
+{
+	// Shuffle the squares on the board and erase the values from the first several
+	std::vector<BoardSquare> tempBoard = this->_boardState;
+	std::random_shuffle(tempBoard.begin(), tempBoard.end());
+	std::vector<BoardSquare>::iterator it = tempBoard.begin();
+	int i = 0;
+	while (i < numberOfValuesToDelete && it != tempBoard.end())
+	{
+		this->_boardState[this->_width * it->getY() + it->getX()].assignValue(0, true);
+		it->isMutable = true;
+		++it;
+		++i;
+	}
+}

@@ -29,11 +29,14 @@ bool BoardSquare::assignValue(int value, bool boardIsGenerating)
 	{
 		this->_valuesAttemptedDuringBoardGeneration.insert(value);
 		this->_value = value;
-		this->isMutable = false;
+		this->isMutable = value == 0;
 		return true;
 	}
 	else if (this->_value == 0 || this->isMutable)
 	{
+		// If the board isn't being generated (i.e., play has started),
+		// we can only assign a value if the square is empty or was not filled
+		// during board generation
 		this->_value = value;
 		return true;
 	}

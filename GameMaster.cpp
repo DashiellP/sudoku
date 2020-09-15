@@ -6,11 +6,17 @@ GameMaster::GameMaster()
 {
 }
 
+/*
+ Initialize the game board
+ */
 void GameMaster::startGame(int numberOfStartingValues)
 {
 	this->_board = new Board(9, 9, 3, 3, numberOfStartingValues);
 }
 
+/*
+ Write a value to (x,y). Returns true if the value is valid and was successfully written.
+ */
 bool GameMaster::makeMove(int value, int x, int y)
 {
 	return 
@@ -20,6 +26,8 @@ bool GameMaster::makeMove(int value, int x, int y)
 
 bool GameMaster::isGameComplete()
 {
+	// Check if all squares are filled in. Values are validated on input, but 
+	// may want to add validation here too
 	std::vector<BoardSquare> boardState = this->_board->getBoardState();
 	for (std::vector<BoardSquare>::iterator it = boardState.begin(); it != boardState.end(); ++it)
 	{
@@ -30,6 +38,9 @@ bool GameMaster::isGameComplete()
 
 Board GameMaster::getBoard() { return *this->_board; }
 
+/*
+ Check if a given move has a valid value and location
+ */
 bool GameMaster::_isValidMove(int value, int x, int y)
 {
 	if (value < 0 || value > 9 || 
