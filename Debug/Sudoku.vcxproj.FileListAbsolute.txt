@@ -1,2 +1,0 @@
-D:\Users\Dashiell\Documents\Projects\Sudoku2\Sudoku\Debug\Sudoku.exe
-D:\Users\Dashiell\Documents\Projects\Sudoku2\Sudoku\Debug\Sudoku.pdb
