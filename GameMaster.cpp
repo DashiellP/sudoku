@@ -39,7 +39,7 @@ bool GameMaster::isGameComplete()
 Board GameMaster::getBoard() { return *this->_board; }
 
 /*
- Check if a given move has a valid value and location
+ Check if a given value is valid at (x,y)
  */
 bool GameMaster::_isValidMove(int value, int x, int y)
 {
